@@ -31,7 +31,7 @@ for choices in allpossible:
 
 
 prob_of_4_black = four_black_solutions / total_solutions
-prob_of_4_black_to_3sf = round(prob_of_4_black, 3 - int(math.floor(math.log10(abs(prob_of_4_black)))) - 1)
 
+prob_of_4_black_to_3sf = round(prob_of_4_black, 3 - int(math.floor(math.log10(abs(prob_of_4_black)))) - 1)
 Answer = int(prob_of_4_black_to_3sf * 185)
 print(Answer)
