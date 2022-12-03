@@ -1,0 +1,14 @@
+Question 2 - Stage 1
+a to j are the digits from 0 to 9 in some order.
+1 divides the one-digit number a,
+2 divides the two-digit number ab,
+3 divides the three-digit number abc,
+
+10 divides the ten-digit number abcdefghij.
+
+
+What is the ten-digit number  abcdefghij?
+
+ You may choose to write a computer program to tackle this question. You can learn to do this HERE; check the 'Using technology' link.
+ 
+ To get your final answer, multiply this by  and take the integer part.
