@@ -15,18 +15,20 @@ import math
 
 # y=x and y=ax intersect at 60 degrees in order to form an eq triangle
 # angle of y=x = arctan1 = 45 degrees
-# angle of y=ax = 105 degrees
+# angle of y=ax = -15 or -75
 
-d = 105
+# y=x and y=bx+c intersect at 60 degrees in order to form an eq triangle
+# 
+# angle of y=bx+c = -15 or -75 degrees
+
+# but b<a so 
+
+d = -15
 r = math.radians(d)
 a = math.tan(r)
 print('A is '+str(a))
 
-# y=ax and y=bx+c intersect at 60 degrees in order to form an eq triangle
-# angle of y=ax = 105 degrees
-# angle of y=bx+c = 165 degrees
-
-d = 165
+d = -75
 r = math.radians(d)
 b = math.tan(r)
 print('B is '+str(b))
@@ -66,3 +68,4 @@ print(result_to_3sf)
 Answer = int(result_to_3sf*476 )
 
 print(Answer)
+Answer = 324
