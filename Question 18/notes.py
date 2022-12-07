@@ -35,3 +35,7 @@ print(overall_time)
 # m=8 time = 11880 = 119 seconds quickest solution
 # m=9 time = 12008    
 # m=10 time = 12776   
+
+answer = 119
+result = int(answer* 0.017)
+#result = 2
