@@ -1,0 +1,8 @@
+# mountains satisfy the euation x**2 + y**2 + z**2 = 734 where x,y,z are all integers
+# also x**2 + y**2 is less than 28**2
+
+mountains = []
+
+for x in range(28):
+
+
