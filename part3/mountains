@@ -1,8 +1,200 @@
 # mountains satisfy the euation x**2 + y**2 + z**2 = 734 where x,y,z are all integers
 # also x**2 + y**2 is less than 28**2
+# height of the mountain = z*0.1875
+import math
+import random
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from py2opt.routefinder import RouteFinder
 
-mountains = []
 
-for x in range(28):
+
+#setup variables from question
+beta = math.asin(6/10)
+thetaup = 0.5*((math.pi/2)-beta)
+thetadown = 0.5*((math.pi/2)+beta)
+
+
+#speeds in km/s
+
+#uu = 0.001*2*(math.tan(beta)*(1+math.cos(2*thetaup))+math.sin(2*thetaup))
+#ud = 0.001*2*math.tan(-beta)+2*math.tan(-beta)*math.cos(2*thetadown)+2*math.sin(2*thetadown)
+#uf = 0.001*2
+
+uu=0.001
+ud=0.004
+uf=0.002
+
+tanalpha = math.tan(beta)
+
+
+def find_closest(point,list_of_points):
+    distances = []
+    for p in list_of_points:
+        dist = path_time(point,p)
+        distances.append(dist)
+    
+    min_dist_point=[]
+    min_dist = min(distances)
+    for i in range(len(distances)):
+        if distances[i] == min_dist:
+            min_dist_point.append(list_of_points[i])
+    
+    return min_dist_point[0]
+
+            
+        
+
+
+def plot_island():
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for m in peaks:
+        ax.scatter(m[0], m[1], m[2], c='r', marker='o')
+
+    for l in lzs:
+        ax.scatter(l[0],l[1],l[2], c='g',marker ='o')
+        
+    x,y,z = zip(*best_route)
+    ax.plot(x,y,z,c='b')
+    
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    plt.show()
+
+
+
+#create list of mountains
+def mountains():
+    peaks = []
+    for x in range(28):
+      for y in range(28):
+         for z in range(28):
+                if x**2 + y**2 < 28**2:
+                    if x**2 + y**2 + z**2 == 734:
+                        peaks.append([x,y,0.1875*z])            
+    return peaks
+
+
+#list of start/end points - !!remember to worry about the mountains on the beach!!
+def landing_zones():
+    lz = []
+    for x in range(28):
+        for y in range (28):
+            hyp = x**2 + y**2
+            if (hyp < 28**2) and (hyp > 27**2):
+                lz.append([x,y,0])
+    return lz
+                
+
+                
+    
+    
+# how far apart are 2 mountains
+def separation(mountainA,mountainB):
+    distance = math.sqrt((mountainB[0]-mountainA[0])**2 + ((mountainB[1]-mountainA[1])**2))
+    return distance
+
+#does an allowed path exist between two mountains
+def path_exists(mountainA,mountainB):
+    rise = mountainB[2]-mountainA[2]
+    tread = separation([mountainA[0],mountainA[1]],[mountainB[0],mountainB[1]])
+    if tread == 0:
+        return False
+    path_gradient = rise / tread
+    if path_gradient > tanalpha:
+        return False
+    else:
+        return True
+    
+def find_paths(mountains):
+    paths = []
+    for m in mountains: 
+        pathrow = []
+        for n in mountains:
+            pathrow.append('X')
+        paths.append(pathrow)
+    
+    for m in range(len(mountains)):
+        for n in range(len(mountains)):
+            if  m != n:
+                
+                if path_exists(mountains[m],mountains[n]):
+                    paths[m][n] = round(path_time(mountains[m],mountains[n]),2)
+                else:
+                    paths[m][n] = 100_000_000_000
+            else:
+                paths[m][n] = 0
+    return paths
+
+#calculate the time between mountains in secs
+def path_time(m1,m2):
+    # dt = separation
+    dt = separation(m1,m2)
+    z1 = m1[2]
+    z2 = m2[2]
+    
+    
+    # is there a path?
+    if not path_exists(m1,m2):
+        return 1_000_000_000
+    # as there is a path
+    #path time is distance down * ud + distance along * uf + distance up * uu
+    #find intecept point of up/down and sealevel
+    # yd = -Ax+y1
+    # yu = Ax+y2-Ax2
+    # yf = 0
+    #
+    #intercept yd with yu
+    intercept_ud = ((tanalpha*dt)-z2+z1)/(2*tanalpha)
+    intercept_uf = ((tanalpha*dt)-z2)/(tanalpha)
+    intercept_df = (z1/tanalpha)
+    
+    dd = intercept_df
+    df = intercept_uf - intercept_df
+    du = dt - intercept_uf
+    
+    # if the slope gets to sea level
+    if intercept_df < intercept_ud:        
+        total_time = (dd /ud) + (df / uf) + (du / uu)
+    else:
+        total_time = (dd / ud) + (du / uu)
+    return total_time
+
+
+
+
+
+
+peaks = mountains()
+print(peaks)
+lzs = landing_zones()
+print(lzs)
+# add startpoint from list of landingzones
+# random.shuffle(peaks)
+peaks.insert(0,random.choice(lzs))
+paths = find_paths(peaks)
+
+
+route_finder = RouteFinder(paths, peaks, iterations=1000)
+best_time, best_route = route_finder.solve()
+
+
+
+#find closest leaving point
+leaving_point=find_closest(best_route[-1],lzs)
+time_to_lp = path_time(leaving_point,best_route[-1])
+
+best_time = best_time + time_to_lp
+best_time = round(best_time,2)
+
+print(best_time)
+   
+plot_island()
+
+
+
 
 
