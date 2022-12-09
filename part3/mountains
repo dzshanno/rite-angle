@@ -3,6 +3,7 @@
 # height of the mountain = z*0.1875
 import math
 import random
+import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from py2opt.routefinder import RouteFinder
@@ -57,12 +58,24 @@ def plot_island():
         
     x,y,z = zip(*best_route)
     ax.plot(x,y,z,c='b')
+    for i in range(len(x)):
+        ax.text(x[i],y[i],z[i],'%s' % (str(i)))
     
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
     plt.show()
+    
+def plot_results(best_results):
+    plt.style.use('_mpl-gallery')
+    fig, ax = plt.subplots()
+    for br in best_results:
+        ax.bar(str(br[0]), br[1], width=1, edgecolor="white", linewidth=0.7)
+
+    ax.set(xlim=(0, 50))
+    plt.show()
+    
 
 
 
@@ -104,7 +117,7 @@ def path_exists(mountainA,mountainB):
     if tread == 0:
         return False
     path_gradient = rise / tread
-    if path_gradient > tanalpha:
+    if abs(path_gradient) > tanalpha:
         return False
     else:
         return True
@@ -169,30 +182,31 @@ def path_time(m1,m2):
 
 
 peaks = mountains()
-print(peaks)
 lzs = landing_zones()
-print(lzs)
-# add startpoint from list of landingzones
-# random.shuffle(peaks)
-peaks.insert(0,random.choice(lzs))
-paths = find_paths(peaks)
+best_results = []
+for l in lzs:
+
+    # add startpoint from list of landingzones
+    # random.shuffle(peaks)
+    peaks.insert(0,random.choice(lzs))
+    paths = find_paths(peaks)
+    route_finder = RouteFinder(paths, peaks, iterations=100)
+    best_time, best_route = route_finder.solve()
 
 
-route_finder = RouteFinder(paths, peaks, iterations=1000)
-best_time, best_route = route_finder.solve()
 
+    #find closest leaving point
+    leaving_point=find_closest(best_route[-1],lzs)
+    time_to_lp = path_time(leaving_point,best_route[-1])
+    best_route.append(leaving_point)
 
+    best_time = best_time + time_to_lp
+    best_time = round(best_time,2)
+    best_results.append([l,best_time,best_route])
 
-#find closest leaving point
-leaving_point=find_closest(best_route[-1],lzs)
-time_to_lp = path_time(leaving_point,best_route[-1])
-
-best_time = best_time + time_to_lp
-best_time = round(best_time,2)
-
-print(best_time)
-   
-plot_island()
+print(best_results)
+plot_results(best_results)
+# plot_island()
 
 
 
