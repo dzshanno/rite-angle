@@ -179,38 +179,45 @@ def path_time(m1,m2):
 
 
 
+#setup
 
 
-peaks = mountains()
 lzs = landing_zones()
-starting_point = random.choice(lzs)
+best_times = []
 
+for l in lzs:
+    starting_point = l
+    peaks = mountains()
 
-# add startpoint from list of landingzones
-# random.shuffle(peaks)
-peaks.insert(0,starting_point)
-paths = find_paths(peaks)
-route_finder = RouteFinder(paths, peaks, iterations=100)
-best_time, best_route = route_finder.solve()
+    # add startpoint from list of landingzones
+    # random.shuffle(peaks)
+    peaks.insert(0,starting_point)
+    paths = find_paths(peaks)
+    route_finder = RouteFinder(paths, peaks, iterations=10000)
+    best_time, best_route = route_finder.solve()
 
-#find closest leaving point
-leaving_point=find_closest(best_route[-1],lzs)
-time_to_lp = path_time(leaving_point,best_route[-1])
-best_route.append(leaving_point)
+    #find closest leaving point
+    leaving_point=find_closest(best_route[-1],lzs)
+    time_to_lp = path_time(leaving_point,best_route[-1])
+    best_route.append(leaving_point)
 
-best_time = best_time + time_to_lp
-best_time = round(best_time,2)
-
+    best_time = best_time + time_to_lp
+    best_time = round(best_time,2)
+    
+    best_times.append([best_time,best_route])
+    
+print(best_times)
 
 #plot_results(best_results)
 #plot_island()
 
 #print out results
-print(best_time)
+#print(best_time)
 #print(starting_point[0],',',starting_point[1])
-for r in best_route:
-    print(r[0],',',r[1])
+#for r in best_route:
+#    print(r[0],',',r[1])
 
+print(len(lzs))
 
 
 
