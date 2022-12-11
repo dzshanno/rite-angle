@@ -144,11 +144,9 @@ def find_paths(mountains):
 
 #calculate the time between mountains in secs
 def path_time(m1,m2):
-    # dt = separation
     dt = separation(m1,m2)
     z1 = m1[2]
     z2 = m2[2]
-    
     
     # is there a path?
     if not path_exists(m1,m2):
@@ -165,26 +163,24 @@ def path_time(m1,m2):
     intercept_uf = ((tanalpha*dt)-z2)/(tanalpha)
     intercept_df = (z1/tanalpha)
     
-    dd = intercept_df
-    df = intercept_uf - intercept_df
-    du = dt - intercept_uf
+    d_down_to_flat = intercept_df
+    d_along_flat = intercept_uf - intercept_df
+    d_up_after_flat = dt - intercept_uf
+    d_down_to_up = intercept_ud
+    d_up_to_top = dt - intercept_ud
     
     # if the slope gets to sea level
     if intercept_df < intercept_ud:        
-        total_time = (dd /ud) + (df / uf) + (du / uu)
+        total_time = (d_down_to_flat /ud) + (d_along_flat / uf) + (d_up_after_flat / uu)
     else:
-        total_time = (dd / ud) + (du / uu)
-    return total_time
+        total_time = (d_down_to_up / ud) + (d_up_to_top / uu)
+    return total_time   
 
-
-
-
-#setup
 
 
 lzs = landing_zones()
 best_times = []
-min_time = 100_000_000
+min_time = 100000000.00
 
 for l in lzs:
     starting_point = l
@@ -194,7 +190,7 @@ for l in lzs:
     # random.shuffle(peaks)
     peaks.insert(0,starting_point)
     paths = find_paths(peaks)
-    route_finder = RouteFinder(paths, peaks, iterations=30000)
+    route_finder = RouteFinder(paths, peaks, iterations=5000)
     best_time, best_route = route_finder.solve()
 
     #find closest leaving point
@@ -204,7 +200,7 @@ for l in lzs:
 
     best_time = best_time + time_to_lp
     best_time = round(best_time,2)
-    if best_time < min_time:
+    if best_time <= min_time:
         min_time == best_time
     
     best_times.append([best_time,best_route])
@@ -212,16 +208,6 @@ for l in lzs:
 
 print(best_times)
 
-#plot_results(best_results)
-#plot_island()
-
-#print out results
-#print(best_time)
-#print(starting_point[0],',',starting_point[1])
-#for r in best_route:
-#    print(r[0],',',r[1])
-
-print(len(lzs))
 
 
 
