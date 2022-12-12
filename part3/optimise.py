@@ -1,6 +1,7 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import math
+import island
 
 #create list of mountains
 def mountains():
@@ -142,7 +143,7 @@ thetadown = 0.5*((math.pi/2)+beta)
 
 tanalpha = math.tan(beta)
 
-allpoints = mountains() + landing_zones()
+allpoints = island.mountains() + island.landing_zones()
 alltimes = find_times(allpoints)
 
 
