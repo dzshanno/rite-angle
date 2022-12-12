@@ -41,8 +41,11 @@ def plot_island():
         for a in range(steps):
             base = m[2]/tanalpha
             point = circlepoint(m,base,a*(math.pi*2)/steps)
-            point2 = circlepoint(m,base,(math.pi*2)/(a+1))
-            ax.plot([m[0],point[0]],[m[1],point[1]],[m[2],point[2]],c='b')
+            point2 = circlepoint(m,base,(a+1)*(math.pi*2)/steps)
+            
+            ax.plot([point[0],point2[0]],[point[1],point2[1]],[0,0],c='b')
+            if a % 4 == 0:
+                ax.plot([m[0],point[0]],[m[1],point[1]],[m[2],point[2]],c='r')
 
     #plot the shore
     for l in lzs:
@@ -83,45 +86,58 @@ def mountains():
                     if x**2 + y**2 + z**2 == 734:
                         peaks.append([x,y,0.1875*z])            
     return peaks
-
+def isInside(circle_x, circle_y, rad, x, y):
+     
+    # Compare radius of circle
+    # with distance of its center
+    # from given point
+    if ((x - circle_x) * (x - circle_x) +
+        (y - circle_y) * (y - circle_y) <= rad * rad):
+        return True;
+    else:
+        return False;
 
 #list of start/end points - !!remember to worry about the mountains on the beach!!
 def landing_zones():
     lz = []
     for x in range(29):
         for y in range (29):
+            flat = True
             hyp = x**2 + y**2
-            if (hyp < 28**2) and (hyp >= 26.6 **2):
+            for m in peaks:
+                #check to see if the lading zone is flat
+                if isInside(m[0],m[1],m[2]/(tanalpha),x,y):
+                    flat = False   
+            if (hyp < 28**2) and (hyp >= 26.6 **2) and flat == True:
                 lz.append([x,y,0])
     return lz
-                
 
-                
-    
-    
-# how far apart are 2 mountains
-def separation(mountainA,mountainB):
-    distance = math.sqrt((mountainB[0]-mountainA[0])**2 + ((mountainB[1]-mountainA[1])**2))
-    return distance
 
-#does an allowed path exist between two mountains
-def path_exists(mountainA,mountainB):
-    rise = mountainB[2]-mountainA[2]
-    tread = separation([mountainA[0],mountainA[1]],[mountainB[0],mountainB[1]])
-    if tread == 0:
-        return False
-    path_gradient = rise / tread
-    if abs(path_gradient) > tanalpha:
-        return False
-    else:
-        return True
-    
-
+# having looked at all the possible landing zones, the list below is those that dont cross with a mountain
+flat_landingzones = [
+    [0, 27, 0], [5, 27, 0],  [6, 27, 0],  [7, 27, 0], 
+    [8, 26, 0], [9, 26, 0],  [10, 26, 0], [11, 25, 0], 
+    [12, 25, 0],[17, 22, 0], [18, 21, 0], [21, 18, 0],  
+    [22, 17, 0],[25, 11, 0], [25, 12, 0], [26, 8, 0], 
+    [26, 9, 0], [26, 10, 0], [27, 0, 0],  [27, 5, 0], 
+    [27, 6, 0], [27, 7, 0]
+]
 
 peaks = mountains()
 lzs = landing_zones()
 print(lzs)
 plot_island()
+
+
+
+mountainous_landing_zones= [
+    [1, 27, 0], [2, 27, 0], [3, 27, 0], [4, 27, 0], [6, 26, 0],[7, 26, 0],[10, 25, 0],[12, 24, 0],
+    [13, 24, 0],[14, 24, 0], [14, 23, 0], [15, 22, 0], [15, 23, 0],[16, 22, 0],[17, 21, 0],[18, 20, 0],[19, 19, 0],[19, 20, 0],
+    
+    [27, 1, 0], [27, 2, 0], [27, 3, 0], [27, 4, 0],[26, 6, 0], [26, 7, 0], [25, 10, 0],[24, 12, 0],
+    [24, 13, 0],[24, 14, 0], [23, 14, 0],[22, 15, 0],[23, 15, 0],  [22, 16, 0], [21, 17, 0],[20, 18, 0], [20, 19, 0]
+]
+
 
 
 
