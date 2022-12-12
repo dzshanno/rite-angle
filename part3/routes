@@ -1,0 +1,92 @@
+import math
+import island
+
+# how far apart are 2 mountains
+def separation(PointA,PointB):
+    distance = math.sqrt((PointB[0]-PointA[0])**2 + ((PointB[1]-PointA[1])**2))
+    return distance
+
+#does an allowed path exist between two mountains
+def path_exists(pointA,pointB,allowed_gradient):
+    rise = pointB[2]-pointA[2]
+    tread = separation([pointA[0],pointA[1]],[pointB[0],pointB[1]])
+    if tread == 0:
+        return False
+    path_gradient = rise / tread
+    if abs(path_gradient) > allowed_gradient:
+        return False
+    else:
+        return True
+
+def find_times(points):
+    times = []
+    for p1 in points: 
+        times_row = []
+        for p2 in points:
+            times_row.append('X')
+        times.append(times_row)
+
+    for m in range(len(points)):
+        for n in range(len(points)):
+            if  m != n:
+                if path_exists(points[m],points[n],tanalpha):
+                    times[m][n] = path_time(points[m],points[n])
+                else:
+                    times[m][n] = 100_000_000_000
+            else:
+                times[m][n] = 0
+    return times
+
+def path_time(m1,m2):
+    dt = separation(m1,m2)
+    z1 = m1[2]
+    z2 = m2[2]
+    
+    # is there a path?
+    if not path_exists(m1,m2,tanalpha):
+        return 1_000_000_000
+    # as there is a path
+    #path time is distance down * ud + distance along * uf + distance up * uu
+    #find intecept point of up/down and sealevel
+    # yd = -Ax+y1
+    # yu = Ax+y2-Ax2
+    # yf = 0
+    #
+    #intercept yd with yu
+    intercept_ud = ((tanalpha*dt)-z2+z1)/(2*tanalpha)
+    intercept_uf = ((tanalpha*dt)-z2)/(tanalpha)
+    intercept_df = (z1/tanalpha)
+    
+    d_down_to_flat = intercept_df
+    d_along_flat = intercept_uf - intercept_df
+    d_up_after_flat = dt - intercept_uf
+    d_down_to_up = intercept_ud
+    d_up_to_top = dt - intercept_ud
+    
+    # if the slope gets to sea level
+    if intercept_df < intercept_ud:        
+        total_time = (d_down_to_flat /ud) + (d_along_flat / uf) + (d_up_after_flat / uu)
+    else:
+        total_time = (d_down_to_up / ud) + (d_up_to_top / uu)
+    return total_time   
+
+def route_time(route):
+    elapsed_time = 0
+    for r in range(len(route)-1):
+        start_index = allpoints.index(route[r])
+        end_index = allpoints.index(route[r+1])
+        elapsed_time = elapsed_time + alltimes[start_index][end_index]
+    return elapsed_time
+        
+#setup
+
+uu=0.001
+ud=0.004
+uf=0.002
+
+beta = math.asin(6/10)
+thetaup = 0.5*((math.pi/2)-beta)
+thetadown = 0.5*((math.pi/2)+beta)
+
+tanalpha = math.tan(beta)
+
