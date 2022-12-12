@@ -124,9 +124,8 @@ flat_landingzones = [
 ]
 
 peaks = mountains()
-lzs = landing_zones()
-print(lzs)
-plot_island()
+#lzs = landing_zones()
+
 
 
 
